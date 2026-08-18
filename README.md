@@ -14,4 +14,4 @@ API developed with Node.js, Express and MongoDB, integrating the extern API TMDB
 - An API Key from [The Movie Database (TMDB)](https://www.themoviedb.org/documentation/api)
 
 # CLONE REPOSITORY
-- git clone https://github.com/tu-usuario/mi-proyecto-backend
+- git clone https://github.com/BVarelaM/tmdb_project.git

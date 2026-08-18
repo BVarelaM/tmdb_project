@@ -1,4 +1,4 @@
-const userRepository = require('../../data/repositories/userRepository');
+const userRepository = require('../../data/repositories/user');
 const { movieItem } = require('../models/Movie');
 
 const VALID_LISTS = ['watchlist', 'favorites', 'watched'];
