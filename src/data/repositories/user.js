@@ -23,6 +23,11 @@ const findById = async (id) => {
   return await db.collection(COLLECTION_NAME).findOne({ _id: new ObjectId(id) });
 };
 
+const findByUserId = async (userId) => {
+  const db = getDB();
+  return await db.collection(COLLECTION_NAME).findOne({ userId });
+};
+
 const create = async (user) => {
     const db = getDB();
     console.log('name db  ' + db.collection(COLLECTION_NAME).toString())
@@ -34,7 +39,7 @@ const addMovieToList = async (userId, listName, movieItem) => {
   const db = getDB();
   
   const filter = {
-    _id: new ObjectId(userId),
+    userId: userId,
     [`${listName}.tmdbId`]: { $ne: movieItem.tmdbId }
   };
 
@@ -50,7 +55,7 @@ const addMovieToList = async (userId, listName, movieItem) => {
 const removeMovieFromList = async (userId, listName, tmdbId) => {
   const db = getDB();
 
-  const filter = { _id: new ObjectId(userId) };
+  const filter = { userId: userId };
   const update = {
     $pull: { [listName]: { tmdbId: Number(tmdbId) } },
     $set: { updatedAt: new Date() }
@@ -65,6 +70,7 @@ module.exports = {
   findAll,
   findByUsername,
   findById,
+  findByUserId,
   create,
   addMovieToList,
   removeMovieFromList

@@ -1,5 +1,6 @@
 const userRepository = require('../../data/repositories/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { movieItem } = require('../models/Movie');
 
@@ -80,7 +81,7 @@ const loginUser = async ({ email, password }) => {
 
 
 const getUserProfile = async (userId) => {
-  const user = await userRepository.findById(userId);
+  const user = await userRepository.findByUserId(userId);
   if (!user) {
     const error = new Error('User not found');
     error.statusCode = 404;
@@ -111,7 +112,7 @@ const addMovieToList = async (userId, listName, movieData) => {
 
   const movieItemVar = movieItem(movieData);
 
-  const user = await userRepository.findById(userId);
+  const user = await userRepository.findByUserId(userId);
   if (!user) {
     const error = new Error('User not found');
     error.statusCode = 404;
@@ -158,8 +159,8 @@ const compareUserLists = async (currentUserId, targetUserId, listName = 'watchli
     throw error;
   }
 
-  const userA = await userRepository.findById(currentUserId);
-  const userB = await userRepository.findById(targetUserId);
+  const userA = await userRepository.findByUserId(currentUserId);
+  const userB = await userRepository.findByUserId(targetUserId);
 
   if (!userA || !userB) {
     const error = new Error('One or both users do not exist');
