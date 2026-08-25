@@ -1,4 +1,4 @@
-const { MongoDb } = require('mongodb');
+const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 const { MONGO_USER, MONGO_PASS, MONGO_CLUSTER, MONGO_DB } = process.env;

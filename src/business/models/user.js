@@ -2,7 +2,7 @@ const user = ({ username, email, password }) => {
   return {
     username: username.trim(),
     email: email.toLowerCase().trim(),
-    password, // Debe ser el hash encriptado
+    password,
     watchlist: [],
     favorites: [],
     watched: [],

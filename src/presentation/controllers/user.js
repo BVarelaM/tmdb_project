@@ -69,9 +69,53 @@ const compareLists = async (req, res, next) => {
     }
 };
 
+//USER LOGIN AND REGISTER
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.status(200).json({ success: true, data: users });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await userService.getUserById(id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const registerUser = async (req, res, next) => {
+  try {
+    const newUser = await userService.registerUser(req.body);
+    res.status(201).json({ success: true, data: newUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const loginUser = async (req, res, next) => {
+  try {
+    const result = await userService.loginUser(req.body);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
     getProfile,
     addMovieToList,
     removeMovieFromList,
+    compareLists,
+    getAllUsers,
+    getUserById,
+    registerUser,
+    loginUser,
     compareLists
 };

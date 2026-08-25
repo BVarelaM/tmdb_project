@@ -13,13 +13,19 @@ const findByUsername = async (username) => {
   return await db.collection(COLLECTION_NAME).findOne({ username });
 };
 
+const findAll = async () => {
+  const db = getDB();
+  return await db.collection(COLLECTION_NAME).find({}).toArray();
+}
+
 const findById = async (id) => {
   const db = getDB();
   return await db.collection(COLLECTION_NAME).findOne({ _id: new ObjectId(id) });
 };
 
 const create = async (user) => {
-  const db = getDB();
+    const db = getDB();
+    console.log('name db  ' + db.collection(COLLECTION_NAME).toString())
   const result = await db.collection(COLLECTION_NAME).insertOne(user);
   return { _id: result.insertedId, ...user };
 };
@@ -56,6 +62,7 @@ const removeMovieFromList = async (userId, listName, tmdbId) => {
 
 module.exports = {
   findByEmail,
+  findAll,
   findByUsername,
   findById,
   create,

@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const userController = require('../controllers/movie');
+const movieController = require('../controllers/movie');
 
-router.get('/movie/:id', userController.findMovieById);
-router.get('/movie/autocomplete', userController.findMovieAutoComplete);
+router.get('/autocomplete', movieController.findMovieAutoComplete);
+router.get('/external-search', movieController.searchExternalMovie);
+router.get('/:id', movieController.findMovieById);
 
 module.exports = router;
