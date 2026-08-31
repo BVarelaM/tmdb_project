@@ -7,7 +7,7 @@ const sendRecommendation = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Recommendation sent successfully',
+      message: 'Recommendation creatd and sent successfully to your friend',
       data: result
     });
   } catch (error) {

@@ -2,7 +2,7 @@ const userRepository = require('../../data/repositories/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { movieItem } = require('../models/Movie');
+const { movieItem } = require('../models/movie');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const VALID_LISTS = ['watchlist', 'favorites', 'watched'];
@@ -92,6 +92,19 @@ const getUserProfile = async (userId) => {
   return userProfile;
 };
 
+const getUserById = async (userId) => {
+  const user = await userRepository.findByUserId(userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const userObj = user.toObject ? user.toObject() : user;
+  const { password, ...userWithoutPassword } = userObj;
+  return userWithoutPassword;
+};
+
 const getAllUsers = async () => {
   const users = await userRepository.findAll();
   
@@ -152,7 +165,7 @@ const removeMovieFromList = async (userId, listName, tmdbId) => {
   return { message: `Movie removed from ${listName}` };
 };
 
-const compareUserLists = async (currentUserId, targetUserId, listName = 'watchlist') => {
+const compareUserLists = async (currentUserId, targetUserId) => {
   if (currentUserId === targetUserId) {
     const error = new Error('You cannot compare your list with your own');
     error.statusCode = 400;
@@ -168,25 +181,52 @@ const compareUserLists = async (currentUserId, targetUserId, listName = 'watchli
     throw error;
   }
 
-  const listA = userA[listName] || [];
-  const listB = userB[listName] || [];
+  const getMovieMapWithLists = (user) => {
+    const map = new Map();
+    VALID_LISTS.forEach(listName => {
+      const list = user[listName] || [];
+      list.forEach(movie => {
+        if (movie && movie.tmdbId) {
+          if (!map.has(movie.tmdbId)) {
+            map.set(movie.tmdbId, { ...movie, lists: [] });
+          }
+          map.get(movie.tmdbId).lists.push(listName);
+        }
+      });
+    });
+    return map;
+  };
 
-  const idsA = listA.map((movie) => movie.tmdbId);
-  const idsB = new Set(listB.map((movie) => movie.tmdbId));
+  const mapA = getMovieMapWithLists(userA);
+  const mapB = getMovieMapWithLists(userB);
 
-  const commonIds = idsA.filter((id) => idsB.has(id));
+  const commonMovies = [];
 
-  const commonMovies = listA.filter((movie) => commonIds.includes(movie.tmdbId));
+  for (const [tmdbId, movieDataA] of mapA.entries()) {
+    if (mapB.has(tmdbId)) {
+      const movieDataB = mapB.get(tmdbId);
+      commonMovies.push({
+        tmdbId,
+        title: movieDataA.title,
+        posterPath: movieDataA.posterPath,
+        releaseDate: movieDataA.releaseDate,
+        userLists: {
+          [userA.username]: movieDataA.lists,
+          [userB.username]: movieDataB.lists
+        }
+      });
+    }
+  }
 
   return {
     comparedWith: userB.username,
-    listName,
     totalCommon: commonMovies.length,
     commonMovies
   };
 };
 
 module.exports = {
+  getUserById,
   getUserProfile,
   registerUser,
   loginUser,

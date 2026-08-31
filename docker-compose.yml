@@ -1,0 +1,45 @@
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:6.0
+    container_name: movie_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Chrollo
+      MONGO_INITDB_ROOT_PASSWORD: passW666
+    volumes:
+      - mongo_data:/data/db
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: movie_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"     # Connection AMQP (Node.js)
+      - "15672:15672"   # web administration panel
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  api:
+    build: .
+    container_name: movies_api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGO_URI=mongodb://Chrollo:passW666@mongodb:27017/MovieDB?authSource=admin
+      - RABBITMQ_URI=amqp://rabbitmq:5672
+      - JWT_SECRET=BrokeBack_Mountain
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+volumes:
+  mongo_data:
+  rabbitmq_data:

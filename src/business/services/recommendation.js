@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const recommendationRepository = require('../../data/repositories/recommendation');
 const userRepository = require('../../data/repositories/user');
+const { publishEvent } = require('../../config/rabbitmq');
 
 const VALID_STATUSES = ['pending', 'accepted', 'rejected', 'all'];
 
@@ -35,7 +36,21 @@ const sendRecommendation = async (senderUserId, { receiverUserId, movie, message
     updatedAt: new Date()
   };
 
-  return await recommendationRepository.create(newRecommendation);
+  //return await recommendationRepository.create(newRecommendation);
+
+  const savedRecommendation = await recommendationRepository.create(newRecommendation);
+
+  await publishEvent('recommendation_created', {
+    event: 'RECOMMENDATION_CREATED',
+    statusText: 'Recommendation created and sent to your friend',
+    recommendationId: savedRecommendation.recommendationId,
+    senderUserId: savedRecommendation.senderUserId,
+    receiverUserId: savedRecommendation.receiverUserId,
+    movieTitle: savedRecommendation.movie.title,
+    message: savedRecommendation.message,
+    createdAt: savedRecommendation.createdAt
+  });
+  return savedRecommendation;
 };
 
 const getRecommendationsByStatus = async (receiverUserId, status = 'pending') => {
@@ -93,6 +108,6 @@ const respondToRecommendation = async (receiverUserId, recommendationId, action)
 
 module.exports = {
   sendRecommendation,
-  getPendingRecommendations,
+  getRecommendationsByStatus,
   respondToRecommendation
 };
