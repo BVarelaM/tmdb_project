@@ -1,5 +1,5 @@
 # MOVIE DATABASE
-API developed with Node.js, Express and MongoDB, integrating the extern API TMDB (The movie database). This will allow to the user to have personalisated list of movies (movies already watched, favourites and next ones). Also they could see some recomendation from other friends or if they want to do a marathon movie, they will have the time that it could take.
+API developed with Node.js, Express and MongoDB, integrating the extern API TMDB (The movie database). This will allow to the user to have personalisated list of movies (movies already watched, favourites and next ones).
 
 # APPLIED TECHNOLOGIES
 - runtime environment : Node.js
